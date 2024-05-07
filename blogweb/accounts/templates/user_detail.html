@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Detail</title>
+</head>
+<body>
+    <h1>User Detail</h1>
+    <ul id="user-list"></ul>
+
+    <script>
+        fetch('/api/v1/accounts/get/{{ user_id }}/')
+            .then(response => response.json()) // Parse response as JSON
+            .then(data => {
+                // Process the data and update the UI
+                const userList = document.getElementById('user-list');
+                const listItem = document.createElement('li');
+                listItem.textContent = `ID: ${data.id}, Username: ${data.username}, Email: ${data.email}`;
+                userList.appendChild(listItem);
+            })
+            .catch(error => console.error('Error fetching user data:', error));
+    </script>
+    
+</body>
+</html>

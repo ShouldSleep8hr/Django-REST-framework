@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Blog</title>
+</head>
+<body>
+    <h1>Edit Blog</h1>
+    <form id="edit-blog-form" method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" value="{{ blog_title }}"><br><br>
+
+        <label for="content">Content:</label>
+        <input type="text" id="content" name="content" value="{{ blog_content }}"><br><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <br>
+    <a href="/blogs/{{ blog_id }}/">
+        <button type="button">Cancel</button>
+    </a>  
+
+    <script>
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
+        
+        document.getElementById('edit-blog-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = {
+                title_text: document.getElementById('title').value,
+                content_text: document.getElementById('content').value,
+            }; // Get form data
+
+            // Remove empty fields from formData
+            Object.keys(formData).forEach(key => {
+                if (formData[key] === '') {
+                    delete formData[key];
+                }
+            });
+
+            fetch('/api/v1/blogs/{{ blog_id }}/update/', {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => {
+                if (response.status === 403) {
+                    // Handle 403 Forbidden response (user not owner of the blog)
+                    alert('You are not the owner of this blog.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle success response
+                window.location.href = 'http://127.0.0.1:8000/blogs/{{ blog_id }}/';
+            })
+            .catch(error => {
+                // Handle other error responses
+                console.error('Error editing blog:', error);
+            });
+        });
+    </script>
+</body>
+</html>

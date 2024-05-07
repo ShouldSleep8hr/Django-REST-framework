@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <script>
+      function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+      }
+
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            }; // Get form data
+
+            fetch('/api/v1/accounts/login/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect or handle success as needed
+                    window.location.href = 'http://127.0.0.1:8000/'; // Redirect to home page after successful login
+                } else {
+                    // Handle invalid login credentials
+                    alert('Invalid username or password');
+                }
+            })
+            .catch(error => {
+                // Handle network errors
+                console.error('Error logging in:', error);
+            });
+        });
+    </script>
+</body>
+</html>

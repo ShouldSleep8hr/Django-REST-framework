@@ -1,0 +1,33 @@
+<h1>Home</h1>
+
+<p>You are not logged in</p>
+<a href="/accounts/login/">
+    <button type="button">Log In</button>
+</a>
+<a href="/accounts/signup/">
+    <button type="button">Sign Up</button>
+</a>
+
+
+<h2>Blogs List</h2>
+<ul id="blog-list"></ul>
+
+
+<script>
+  // Fetch user data from the API endpoint
+  fetch('/api/v1/blogs/get/')
+      .then(response => response.json()) // Parse response as JSON
+      .then(data => {
+          // Process the data and update the UI
+          const blogList = document.getElementById('blog-list');
+          data.forEach(blog => {
+              const listItem = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = `/blogs/${blog.id}/`;
+              link.textContent = `User: ${blog.user}  Title: ${blog.title_text}`;
+              listItem.appendChild(link);
+              blogList.appendChild(listItem);
+          });
+      })
+      .catch(error => console.error('Error fetching blog data:', error));
+</script>

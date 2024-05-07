@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Comment</title>
+</head>
+<body>
+    <h1>Edit {{ user_username }}'s Comment</h1>
+    <form id="edit-comment-form">
+        <label for="comment">Text:</label>
+        <input type="text" id="comment" name="comment" value="{{ comment_text }}"><br><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+    <br>
+    <a href="/blogs/{{ blog_id }}/">
+        <button type="button">Cancel</button>
+    </a>  
+
+    <script>
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
+        
+        document.getElementById('edit-comment-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = {
+                text: document.getElementById('comment').value,
+            }; // Get form data
+
+            // Remove empty fields from formData
+            Object.keys(formData).forEach(key => {
+                if (formData[key] === '') {
+                    delete formData[key];
+                }
+            });
+
+            fetch('/api/v1/blogs/{{ blog_id }}/comment/{{ comment_id }}/update/', {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => {
+                if (response.status === 403) {
+                    // Handle 403 Forbidden response (user not owner of the blog)
+                    alert('You are not the owner of this comment.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Handle success response
+                window.location.href = 'http://127.0.0.1:8000/blogs/{{ blog_id }}/';
+            })
+            .catch(error => {
+                // Handle other error responses
+                console.error('Error editing comment:', error);
+            });
+        });
+    </script>
+</body>
+</html>

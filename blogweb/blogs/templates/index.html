@@ -1,0 +1,68 @@
+<h1>Welcome {{ user_username }}</h1>
+
+<button type="button" onclick="logout()">Logout</button>
+
+<a href="/accounts/{{ user_id }}/edit/">
+  <button type="button">Edit Profile</button>
+</a>  
+
+<a href="/accounts/{{ user_id }}/delete/">
+  <button type="button">Delete</button>
+</a> 
+
+
+<h2>Blogs List</h2>
+<ul id="blog-list"></ul>
+
+
+<script>
+  function getCookie(name) {
+    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return cookieValue ? cookieValue.pop() : '';
+  }
+
+  function logout() {
+    fetch('/api/v1/accounts/logout/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect or handle success as needed
+            window.location.href = 'http://127.0.0.1:8000/'; // Redirect to home page after logout
+        } 
+        else {
+            // Handle error response
+            console.error('Logout failed:', response.statusText);
+        }
+    })
+    .catch(error => {
+        // Handle network errors
+        console.error('Error logging out:', error);
+    });
+  }
+  // Fetch user data from the API endpoint
+  fetch('/api/v1/blogs/get/')
+      .then(response => response.json()) // Parse response as JSON
+      .then(data => {
+          // Process the data and update the UI
+          const blogList = document.getElementById('blog-list');
+          data.forEach(blog => {
+              const listItem = document.createElement('li');
+              const link = document.createElement('a');
+              link.href = `/blogs/${blog.id}/`;
+              link.textContent = `User: ${blog.user}  Title: ${blog.title_text}`;
+              listItem.appendChild(link);
+              blogList.appendChild(listItem);
+          });
+      })
+      .catch(error => console.error('Error fetching blog data:', error));
+</script>
+
+
+<a href="/blogs/create/">
+  <button type="button">Create blog</button>
+</a>

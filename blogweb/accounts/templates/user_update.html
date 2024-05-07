@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1>Edit User</h1>
+    <form id="edit-user-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="{{ user_username }}"><br><br>
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" value="{{ user_email }}"><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br><br>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
+        
+        document.getElementById('edit-user-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            }; // Get form data
+
+            // Remove empty fields from formData
+            Object.keys(formData).forEach(key => {
+                if (formData[key] === '') {
+                    delete formData[key];
+                }
+            });
+
+            // console.log('Request Body:', formData);
+
+            fetch('/api/v1/accounts/update/{{ user_id }}/', {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle success response
+                window.location.href = 'http://127.0.0.1:8000/accounts/{{ user_id }}/';
+            })
+            .catch(error => {
+                // Handle error response
+                console.error('Error editing user:', error);
+            });
+        });
+    </script>
+</body>
+</html>

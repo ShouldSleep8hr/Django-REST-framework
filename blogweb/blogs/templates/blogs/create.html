@@ -1,0 +1,63 @@
+{% comment %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+{% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog</title>
+</head>
+<body>
+    <h1>Create Blog</h1>
+    <form id="create-blog-form" method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title"><br><br>
+
+        <label for="content">Content:</label>
+        <input type="text" id="content" name="content"><br><br>
+
+        <button type="submit">Create</button>
+    </form>
+
+    <script>
+        function getCookie(name) {
+            const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+            return cookieValue ? cookieValue.pop() : '';
+        }
+        
+        document.getElementById('create-blog-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = {
+                title_text: document.getElementById('title').value,
+                content_text: document.getElementById('content').value,
+            }; // Get form data
+
+            // console.log(formData)
+
+            fetch('/api/v1/blogs/create/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle success response
+                window.location.href = 'http://127.0.0.1:8000/';
+            })
+            .catch(error => {
+                // Handle error response
+                console.error('Error creating blog:', error);
+            });
+        });
+    </script>
+</body>
+</html>
