@@ -22,6 +22,9 @@
         <label for="content">Content:</label>
         <input type="text" id="content" name="content"><br><br>
 
+        <label for="tag">Tag:</label>
+        <select id="tag" name="tag"></select><br><br>
+
         <button type="submit">Create</button>
     </form>
 
@@ -30,12 +33,28 @@
             const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
             return cookieValue ? cookieValue.pop() : '';
         }
+
+        fetch('/api/v1/blogs/tag/') // Assuming this endpoint returns a list of tags
+            .then(response => response.json())
+            .then(data => {
+                const tagSelect = document.getElementById('tag');
+                data.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag.id;
+                    option.textContent = tag.name;
+                    tagSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching tags:', error);
+            });
         
         document.getElementById('create-blog-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent default form submission
             const formData = {
                 title_text: document.getElementById('title').value,
                 content_text: document.getElementById('content').value,
+                tag: document.getElementById('tag').value
             }; // Get form data
 
             // console.log(formData)

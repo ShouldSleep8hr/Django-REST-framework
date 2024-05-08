@@ -21,7 +21,18 @@ class IndexView(generic.TemplateView):
         context['user_id'] = self.request.user.id
         context['user_username'] = self.request.user.username
         return context
+    
+class BlogTagView(generic.TemplateView):
+    template_name = 'blog_tag.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag_id = self.kwargs.get('pk')
+        tag = Tag.objects.get(pk=tag_id)
+        
+        context['tag_id'] = tag_id
+        context['tag_name'] = tag.name
+        return context
 
 
 class BlogDetailView(generic.TemplateView):

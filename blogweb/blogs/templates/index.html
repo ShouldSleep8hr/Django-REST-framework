@@ -12,6 +12,10 @@
 
 
 <h2>Blogs List</h2>
+
+<label for="tag">Tag:</label>
+<select id="tag" name="tag"></select><br>
+
 <ul id="blog-list"></ul>
 
 
@@ -44,6 +48,33 @@
         console.error('Error logging out:', error);
     });
   }
+
+  //get tag list
+  fetch('/api/v1/blogs/tag/') // Assuming this endpoint returns a list of tags
+      .then(response => response.json())
+      .then(data => {
+          const tagSelect = document.getElementById('tag');
+          data.forEach(tag => {
+              const option = document.createElement('option');
+              option.value = tag.id;
+              option.textContent = tag.name;
+              option.setAttribute('href', `http://127.0.0.1:8000/blogs/tag/${tag.id}/`); // Set href attribute
+              tagSelect.appendChild(option);
+          });
+          // Add event listener for option selection
+          tagSelect.addEventListener('change', function() {
+              const selectedOption = tagSelect.options[tagSelect.selectedIndex];
+              const href = selectedOption.getAttribute('href');
+              if (href) {
+                  window.location.href = href; // Redirect to tag page
+              }
+          });
+      })
+      .catch(error => {
+          console.error('Error fetching tags:', error);
+      });
+
+
   // Fetch user data from the API endpoint
   fetch('/api/v1/blogs/get/')
       .then(response => response.json()) // Parse response as JSON

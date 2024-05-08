@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 
 class LoginAPIView(generics.CreateAPIView):
     serializer_class = LoginSerializer
@@ -17,10 +17,10 @@ class LoginAPIView(generics.CreateAPIView):
         
         username = serializer.validated_data.get('username')
         password = serializer.validated_data.get('password')
+        user = authenticate(username=username, password=password)
+        # user = User.objects.filter(username=username).first()
         
-        user = User.objects.filter(username=username).first()
-        
-        if user and user.check_password(password):
+        if user is not None:
             login(request, user)
             # Perform additional actions like generating tokens or setting session variables
             return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
