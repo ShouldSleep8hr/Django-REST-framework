@@ -17,10 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-from blogs.views import HomeView, IndexView
+from blogs.views import HomeView, IndexView, Webhook
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),
+    # path("", HomeView.as_view(), name="home"),
     path("index/", IndexView.as_view(), name="index"),
     path("accounts/", include("accounts.urls")),
     # path('accounts/', include('django.contrib.auth.urls')),
@@ -28,5 +28,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/accounts/', include('accounts.api.urls')),
     path('api/v1/blogs/', include('blogs.api.urls')),
-    # path('api/v1/blogs/', include('blogs.api.urls')),
+
 ]

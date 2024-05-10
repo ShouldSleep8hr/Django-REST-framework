@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 
 from .models import Blog, User, Tag, Comment
 
+
 class HomeView(generic.TemplateView):
     template_name = 'home.html'
 
